@@ -4,12 +4,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: () => import('@/views/Login/LoginHeader.vue')
-    }, {
+  routes: [{
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login/Login.vue') // 按需加载
