@@ -3,6 +3,7 @@
     <LoginHeader>
       <!-- 插槽 -->
       <el-form
+        ref="ruleForm"
         slot='container'
         :model='rulesform'
         label-position='left'
@@ -20,7 +21,7 @@
           <el-checkbox v-model="rulesform.autoLogin">7天自动登录</el-checkbox>
           <el-button type="text">忘记密码</el-button>
         </div>
-        <el-button type="primary">登录</el-button>
+        <el-button :loading='isLoading' type="primary" @click='submit'>登录</el-button>
       </el-form>
     </LoginHeader>
   </div>
@@ -47,6 +48,8 @@ export default class Login extends Vue {
       }
     }
   }
+  // Provide 定义 loading
+  @Provide() isLoading:boolean = false
   // Provide 装饰器的作用： 以前我们都会把值存到 data里面
   @Provide() rulesform: {
     username: string;
@@ -56,6 +59,25 @@ export default class Login extends Vue {
     username: '',
     pwd: '',
     autoLogin: true
+  }
+
+  // 登录方法 函数传参数的话 制定类型
+  submit():void {
+      (this.$refs['ruleForm'] as any).validate((valid:boolean) => {
+      if (valid) {
+        this.isLoading = true;
+        (this as any).$axios.post('/api/users/login',this.rulesform).then((res: any) => {
+          localStorage.setItem('tsToken', res.data.token) // 设置token
+          this.isLoading = false;
+        }).catch( (err: any) => {
+          this.isLoading = false;
+          console.log(err)
+        })
+      } else {
+        console.log('error submit!!');
+        return false;
+      }
+    })
   }
 }
 </script>
